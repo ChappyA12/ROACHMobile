@@ -1,13 +1,17 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial xbee(2, 3); // RX, TX
+SoftwareSerial xbeeIn =  SoftwareSerial(2, 3);
+//SoftwareSerial xbeeOut =  SoftwareSerial(5, 4);
 
 void setup()  {
    Serial.begin(9600);
-   xbee.begin(9600);
+   xbeeIn.begin(9600);
+   //xbeeOut.begin(9600);
 }
 
 void loop()  {
-  if(xbee.available()) Serial.println(xbee.read());
-  delay(50);
+  //xbeeOut.write(99);
+  Serial.println(xbeeIn.available());
+  if(xbeeIn.available()) Serial.println(xbeeIn.read());
+  delay(200);
 }
