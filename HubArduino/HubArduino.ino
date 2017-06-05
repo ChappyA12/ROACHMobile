@@ -4,8 +4,8 @@
 #include "Adafruit_BluefruitLE_UART.h"
 #include "BluefruitConfig.h"
 
-SoftwareSerial bluefruitSS = SoftwareSerial(BLUEFRUIT_SWUART_TXD_PIN, BLUEFRUIT_SWUART_RXD_PIN);
-Adafruit_BluefruitLE_UART ble(bluefruitSS, BLUEFRUIT_UART_MODE_PIN, BLUEFRUIT_UART_CTS_PIN, BLUEFRUIT_UART_RTS_PIN);
+SoftwareSerial bleSerial = SoftwareSerial(BLUEFRUIT_SWUART_TXD_PIN, BLUEFRUIT_SWUART_RXD_PIN);
+Adafruit_BluefruitLE_UART ble(bleSerial, BLUEFRUIT_UART_MODE_PIN, BLUEFRUIT_UART_CTS_PIN, BLUEFRUIT_UART_RTS_PIN);
 
 void setup() {
   Serial.begin(9600);
@@ -17,14 +17,17 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available()) {
+  String s = "";
+  if (Serial.available() > 0)
+      s = Serial.read();
+  if (s.length() != 0) {
     String input = Serial.readString();
     //-------------------------------SEND-------------------------------
     Serial.print("[Send] ");
-    Serial.println(input);
+    Serial.println(s);
     ble.print("AT+BLEUARTTX=");
-    ble.println(input);
-    if (!ble.waitForOK()) Serial.println(F("Failed to send"));
+    ble.println(s);
+    //if (!ble.waitForOK()) Serial.println(F("Failed to send"));
     //------------------------------------------------------------------
   }
     //-----------------------------RECIEVE------------------------------
@@ -33,8 +36,7 @@ void loop() {
     if (strcmp(ble.buffer, "OK") != 0) {
       String s = ble.buffer;
       Serial.println("[Recv] " + s);
-      ble.waitForOK();
+      //ble.waitForOK();
     }
     //------------------------------------------------------------------
-  delay(50);
 }
